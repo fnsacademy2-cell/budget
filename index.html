@@ -53,7 +53,7 @@
 
       <!-- Main Slide 1 Titles (Exact from PPT) -->
       <div class="landing-hero-content">
-        <div class="landing-slide-num">EXECUTIVE PRESENTATION</div>
+        <div class="landing-slide-num">SLIDE 1 OF 9 • EXECUTIVE PRESENTATION</div>
         <h1 class="landing-main-title">FORECAST 2026 &amp; BUDGET 2027</h1>
         <p class="landing-subtitle">Financial overview, budget assumptions and key variances</p>
 
@@ -382,10 +382,39 @@
                 <h4 class="card-title">2026 Forecast compared with 2027 Budget</h4>
                 <div class="card-desc">Revenue, Expenditure, and Surplus (PKR million)</div>
               </div>
-              <div class="card-badge">Slide 2 Chart</div>
+              <div class="header-tools-inline">
+                <button id="toggleSurplusViewBtn" class="btn btn-sm btn-outline"
+                  title="Toggle between Macro Overview and Surplus Focus">
+                  <span>🔍 Surplus Zoom View</span>
+                </button>
+              </div>
             </div>
-            <div class="chart-container" style="height: 310px;">
+            <div class="chart-container" style="height: 300px;">
               <canvas id="overviewMacroChart"></canvas>
+            </div>
+            <!-- Surplus Comparison Visual Strip -->
+            <div class="surplus-visual-strip mt-3" id="surplusVisualStrip">
+              <div class="surplus-strip-item">
+                <div class="strip-header">
+                  <span class="strip-label">2026 Forecast Surplus:</span>
+                  <span class="strip-val text-success font-mono font-bold">PKR 11.51m</span>
+                </div>
+                <div class="strip-bar-track">
+                  <div class="strip-bar-fill fill-prior" style="width: 100%;"></div>
+                </div>
+                <div class="strip-sub">1.02% operating margin</div>
+              </div>
+              <div class="surplus-strip-arrow">➔</div>
+              <div class="surplus-strip-item">
+                <div class="strip-header">
+                  <span class="strip-label">2027 Budget Surplus:</span>
+                  <span class="strip-val text-warning font-mono font-bold">PKR 1.39m</span>
+                </div>
+                <div class="strip-bar-track">
+                  <div class="strip-bar-fill fill-expenditure" style="width: 12.1%;"></div>
+                </div>
+                <div class="strip-sub">0.11% margin (−88% contraction)</div>
+              </div>
             </div>
           </div>
 

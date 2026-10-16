@@ -475,6 +475,8 @@ function initCharts() {
   buildSimulationChart();
 }
 
+let isSurplusZoomView = false;
+
 function buildOverviewMacroChart() {
   const ctx = document.getElementById("overviewMacroChart");
   if (!ctx) return;
@@ -491,10 +493,11 @@ function buildOverviewMacroChart() {
             FINANCIAL_DATA.macro.expenditure.forecast2026,
             FINANCIAL_DATA.macro.surplus.forecast2026
           ],
-          backgroundColor: "rgba(148, 163, 184, 0.45)",
-          borderColor: "rgba(148, 163, 184, 0.8)",
-          borderWidth: 1,
-          borderRadius: 6
+          backgroundColor: ["rgba(148, 163, 184, 0.45)", "rgba(148, 163, 184, 0.45)", "rgba(16, 185, 129, 0.55)"],
+          borderColor: ["rgba(148, 163, 184, 0.8)", "rgba(148, 163, 184, 0.8)", "#10b981"],
+          borderWidth: 1.5,
+          borderRadius: 6,
+          minBarLength: 18
         },
         {
           label: "2027 budget",
@@ -505,8 +508,9 @@ function buildOverviewMacroChart() {
           ],
           backgroundColor: ["#3b82f6", "#ef4444", "#f59e0b"],
           borderColor: ["#2563eb", "#dc2626", "#d97706"],
-          borderWidth: 1,
-          borderRadius: 6
+          borderWidth: 1.5,
+          borderRadius: 6,
+          minBarLength: 18
         }
       ]
     },
@@ -539,6 +543,74 @@ function buildOverviewMacroChart() {
       }
     }
   });
+}
+
+function toggleMacroSurplusView() {
+  const chart = state.charts.macro;
+  const btn = document.getElementById("toggleSurplusViewBtn");
+  if (!chart || !btn) return;
+
+  isSurplusZoomView = !isSurplusZoomView;
+
+  if (isSurplusZoomView) {
+    btn.innerHTML = "<span>📊 Full Macro View</span>";
+    btn.classList.add("active");
+    btn.title = "Return to full Revenue, Expenditure & Surplus view";
+
+    chart.data.labels = ["Operating Surplus (PKR m)"];
+    chart.data.datasets[0].label = "2026 forecast surplus";
+    chart.data.datasets[0].data = [FINANCIAL_DATA.macro.surplus.forecast2026];
+    chart.data.datasets[0].backgroundColor = "rgba(16, 185, 129, 0.65)";
+    chart.data.datasets[0].borderColor = "#10b981";
+    chart.data.datasets[0].minBarLength = 0;
+
+    chart.data.datasets[1].label = "2027 budget surplus";
+    chart.data.datasets[1].data = [FINANCIAL_DATA.macro.surplus.budget2027];
+    chart.data.datasets[1].backgroundColor = "rgba(245, 158, 11, 0.75)";
+    chart.data.datasets[1].borderColor = "#f59e0b";
+    chart.data.datasets[1].minBarLength = 0;
+
+    chart.options.scales.y.max = 14;
+    chart.options.scales.y.grace = "10%";
+  } else {
+    btn.innerHTML = "<span>🔍 Surplus Zoom View</span>";
+    btn.classList.remove("active");
+    btn.title = "Zoom into Operating Surplus comparison";
+
+    chart.data.labels = ["Revenue", "Expenditure", "Surplus"];
+    chart.data.datasets[0].label = "2026 forecast";
+    chart.data.datasets[0].data = [
+      FINANCIAL_DATA.macro.revenue.forecast2026,
+      FINANCIAL_DATA.macro.expenditure.forecast2026,
+      FINANCIAL_DATA.macro.surplus.forecast2026
+    ];
+    chart.data.datasets[0].backgroundColor = [
+      "rgba(148, 163, 184, 0.45)",
+      "rgba(148, 163, 184, 0.45)",
+      "rgba(16, 185, 129, 0.55)"
+    ];
+    chart.data.datasets[0].borderColor = [
+      "rgba(148, 163, 184, 0.8)",
+      "rgba(148, 163, 184, 0.8)",
+      "#10b981"
+    ];
+    chart.data.datasets[0].minBarLength = 18;
+
+    chart.data.datasets[1].label = "2027 budget";
+    chart.data.datasets[1].data = [
+      FINANCIAL_DATA.macro.revenue.budget2027,
+      FINANCIAL_DATA.macro.expenditure.budget2027,
+      FINANCIAL_DATA.macro.surplus.budget2027
+    ];
+    chart.data.datasets[1].backgroundColor = ["#3b82f6", "#ef4444", "#f59e0b"];
+    chart.data.datasets[1].borderColor = ["#2563eb", "#dc2626", "#d97706"];
+    chart.data.datasets[1].minBarLength = 18;
+
+    delete chart.options.scales.y.max;
+    chart.options.scales.y.grace = "15%";
+  }
+
+  chart.update();
 }
 
 function buildWaterfallChart() {
@@ -1149,6 +1221,11 @@ function initActionButtons() {
     auditFlag.addEventListener("click", () => {
       switchTab("tab-variances");
     });
+  }
+
+  const toggleSurplusBtn = document.getElementById("toggleSurplusViewBtn");
+  if (toggleSurplusBtn) {
+    toggleSurplusBtn.addEventListener("click", toggleMacroSurplusView);
   }
 }
 
