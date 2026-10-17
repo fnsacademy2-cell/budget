@@ -39,6 +39,36 @@
     <div class="landing-ambient-glow"></div>
     <div class="landing-ambient-glow-2"></div>
 
+    <!-- Slide 1 Top Navigation Bar with Interactive Theme Switcher -->
+    <div class="landing-top-bar">
+      <div class="landing-top-brand">
+        <span class="landing-badge-micro">FINANCIAL PRESENTATION 2026-2027</span>
+      </div>
+
+      <div class="theme-picker-wrapper" id="landingThemePickerWrapper">
+        <button id="landingThemeBtn" class="theme-toggle-trigger" aria-haspopup="true" aria-expanded="false"
+          title="Switch visual presentation theme (Press T to cycle)">
+          <span class="theme-swatch-badge" id="landingThemeSwatch"></span>
+          <span class="theme-label-group">
+            <span class="theme-sub-hint">Theme:</span>
+            <strong class="theme-title-active" id="landingActiveThemeTitle">Executive Midnight</strong>
+          </span>
+          <svg class="theme-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
+
+        <!-- Dropdown Menu of Themes -->
+        <div class="theme-dropdown-menu" id="landingThemeMenu" role="menu" aria-label="Visual Themes">
+          <div class="theme-dropdown-header">
+            <span>Select Presentation Theme</span>
+            <span class="theme-key-hint">Press <strong>T</strong> to cycle</span>
+          </div>
+          <div class="theme-grid-options" id="landingThemeGrid"></div>
+        </div>
+      </div>
+    </div>
+
     <div class="landing-container">
 
       <!-- Organization Brand Header -->
@@ -53,7 +83,7 @@
 
       <!-- Main Slide 1 Titles (Exact from PPT) -->
       <div class="landing-hero-content">
-        <div class="landing-slide-num">SLIDE 1 OF 9 • EXECUTIVE PRESENTATION</div>
+        <div class="landing-slide-num">• EXECUTIVE PRESENTATION</div>
         <h1 class="landing-main-title">FORECAST 2026 &amp; BUDGET 2027</h1>
         <p class="landing-subtitle">Financial overview, budget assumptions and key variances</p>
 
@@ -188,10 +218,29 @@
             <span>What-If Lab</span>
           </button>
 
-          <button id="themeToggle" class="btn-icon" title="Toggle Dark/Light Mode">
-            <span class="icon-sun">☀️</span>
-            <span class="icon-moon">🌙</span>
-          </button>
+          <!-- Interactive Theme Switcher in Header -->
+          <div class="theme-picker-wrapper" id="dashThemePickerWrapper">
+            <button id="themeToggle" class="theme-toggle-trigger dash-theme-trigger" aria-haspopup="true"
+              aria-expanded="false" title="Switch visual theme (Press T to cycle)">
+              <span class="theme-swatch-badge" id="dashThemeSwatch"></span>
+              <span class="theme-label-group header-theme-labels">
+                <strong class="theme-title-active" id="dashActiveThemeTitle">Midnight</strong>
+              </span>
+              <svg class="theme-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+
+            <!-- Dropdown Menu of Themes -->
+            <div class="theme-dropdown-menu theme-dropdown-right" id="dashThemeMenu" role="menu"
+              aria-label="Visual Themes">
+              <div class="theme-dropdown-header">
+                <span>Select Dashboard Theme</span>
+                <span class="theme-key-hint">Press <strong>T</strong> to cycle</span>
+              </div>
+              <div class="theme-grid-options" id="dashThemeGrid"></div>
+            </div>
+          </div>
 
           <button id="printBtn" class="btn btn-primary" title="Export or Print Financial Brief">
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1205,7 +1254,7 @@
           <div class="kpi-card">
             <div class="kpi-header"><span class="kpi-title">KEY IMPERATIVE</span><span
                 class="kpi-tag info">Discipline</span></div>
-            <div class="kpi-main-val" style="font-size:1.1rem; color:#f8fafc;">Cash Flow Rigor</div>
+            <div class="kpi-main-val" style="font-size:1.1rem;">Cash Flow Rigor</div>
             <div class="kpi-footnote">Monthly monitoring required</div>
           </div>
         </div>

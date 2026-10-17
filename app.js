@@ -352,25 +352,232 @@ function updateMasterTable() {
 }
 
 // ==========================================================================
-// Theme Management
+// Theme Management (Multi-Theme Executive System)
 // ==========================================================================
 
-function initTheme() {
-  const savedTheme = localStorage.getItem("malc_theme") || "theme-dark";
-  document.body.classList.remove("theme-dark", "theme-light");
-  document.body.classList.add(savedTheme);
+const AVAILABLE_THEMES = [
+  {
+    id: "theme-dark",
+    name: "Executive Midnight",
+    shortName: "Midnight",
+    icon: "🌙",
+    accent: "#3b82f6",
+    bg: "#0a0e17",
+    category: "Dark Slate",
+    desc: "Default executive dark slate with glowing cobalt accents"
+  },
+  {
+    id: "theme-light",
+    name: "Clean Pearl",
+    shortName: "Pearl",
+    icon: "☀️",
+    accent: "#2563eb",
+    bg: "#f8fafc",
+    category: "Light Theme",
+    desc: "Crisp boardroom white with sharp typography and soft contrast"
+  },
+  {
+    id: "theme-emerald",
+    name: "MALC Emerald",
+    shortName: "Emerald",
+    icon: "🌿",
+    accent: "#10b981",
+    bg: "#04120b",
+    category: "Healthcare Green",
+    desc: "Botanical deep jade & emerald, honoring MALC's healthcare mission"
+  },
+  {
+    id: "theme-navy",
+    name: "Royal Oceanic",
+    shortName: "Navy",
+    icon: "🌊",
+    accent: "#0ea5e9",
+    bg: "#050c18",
+    category: "Deep Sapphire",
+    desc: "Authoritative ocean navy with vivid azure highlights"
+  },
+  {
+    id: "theme-purple",
+    name: "Luxury Amethyst",
+    shortName: "Amethyst",
+    icon: "🔮",
+    accent: "#a855f7",
+    bg: "#0c0716",
+    category: "Fintech Violet",
+    desc: "Refined midnight purple with neon amethyst accents"
+  },
+  {
+    id: "theme-amber",
+    name: "Executive Amber",
+    shortName: "Amber Gold",
+    icon: "👑",
+    accent: "#f59e0b",
+    bg: "#120c06",
+    category: "Prestige Bronze",
+    desc: "Warm dark espresso ebony with burnished gold/amber luster"
+  }
+];
 
-  const toggleBtn = document.getElementById("themeToggle");
-  if (!toggleBtn) return;
+function getCurrentTheme() {
+  const currentClass = AVAILABLE_THEMES.find(t => document.body.classList.contains(t.id));
+  return currentClass || AVAILABLE_THEMES[0];
+}
 
-  toggleBtn.addEventListener("click", () => {
-    const isDark = document.body.classList.contains("theme-dark");
-    const newTheme = isDark ? "theme-light" : "theme-dark";
-    document.body.classList.remove("theme-dark", "theme-light");
-    document.body.classList.add(newTheme);
-    localStorage.setItem("malc_theme", newTheme);
+function setTheme(themeId) {
+  const theme = AVAILABLE_THEMES.find(t => t.id === themeId) || AVAILABLE_THEMES[0];
+  
+  // Remove all theme classes while preserving other classes like landing-active
+  AVAILABLE_THEMES.forEach(t => document.body.classList.remove(t.id));
+  document.body.classList.add(theme.id);
+  localStorage.setItem("malc_theme", theme.id);
 
+  // Sync UI across Landing Page and Dashboard
+  syncThemeUI(theme);
+
+  // Update Chart visual defaults
+  if (typeof updateChartsTheme === "function") {
     updateChartsTheme();
+  }
+}
+
+function cycleNextTheme() {
+  const current = getCurrentTheme();
+  const currentIndex = AVAILABLE_THEMES.findIndex(t => t.id === current.id);
+  const nextIndex = (currentIndex + 1) % AVAILABLE_THEMES.length;
+  setTheme(AVAILABLE_THEMES[nextIndex].id);
+}
+
+function syncThemeUI(theme) {
+  // Update Landing elements
+  const landingSwatch = document.getElementById("landingThemeSwatch");
+  const landingTitle = document.getElementById("landingActiveThemeTitle");
+  if (landingSwatch) {
+    landingSwatch.style.backgroundColor = theme.accent;
+  }
+  if (landingTitle) {
+    landingTitle.textContent = `${theme.icon} ${theme.name}`;
+  }
+
+  // Update Dashboard elements
+  const dashSwatch = document.getElementById("dashThemeSwatch");
+  const dashTitle = document.getElementById("dashActiveThemeTitle");
+  if (dashSwatch) {
+    dashSwatch.style.backgroundColor = theme.accent;
+  }
+  if (dashTitle) {
+    dashTitle.textContent = `${theme.icon} ${theme.shortName}`;
+  }
+
+  // Update Active indicator in both menus
+  document.querySelectorAll(".theme-option-card").forEach(card => {
+    const isThisTheme = card.getAttribute("data-theme-id") === theme.id;
+    card.classList.toggle("active", isThisTheme);
+    card.setAttribute("aria-selected", isThisTheme ? "true" : "false");
+  });
+}
+
+function renderThemeMenuOptions(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const currentTheme = getCurrentTheme();
+
+  container.innerHTML = AVAILABLE_THEMES.map(theme => `
+    <button class="theme-option-card ${theme.id === currentTheme.id ? 'active' : ''}" 
+            data-theme-id="${theme.id}" 
+            role="menuitem"
+            title="Switch to ${theme.name}">
+      <div class="theme-color-preview" style="background: ${theme.bg}; border-color: ${theme.accent}55;">
+        <span class="theme-preview-inner" style="background: ${theme.accent};"></span>
+      </div>
+      <div class="theme-info">
+        <div class="theme-title-row">
+          <span class="theme-name"><span class="theme-icon">${theme.icon}</span> ${theme.name}</span>
+          <span class="theme-active-tag">Active ✓</span>
+        </div>
+        <div class="theme-desc">${theme.desc}</div>
+      </div>
+    </button>
+  `).join("");
+
+  // Attach click handler to each option
+  container.querySelectorAll(".theme-option-card").forEach(card => {
+    card.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const themeId = card.getAttribute("data-theme-id");
+      setTheme(themeId);
+      closeAllThemePickers();
+    });
+  });
+}
+
+function closeAllThemePickers() {
+  document.querySelectorAll(".theme-picker-wrapper").forEach(wrapper => {
+    wrapper.classList.remove("open");
+    const trigger = wrapper.querySelector(".theme-toggle-trigger");
+    if (trigger) trigger.setAttribute("aria-expanded", "false");
+  });
+}
+
+function initTheme() {
+  // Load saved theme or default
+  const savedThemeId = localStorage.getItem("malc_theme") || "theme-dark";
+  const validTheme = AVAILABLE_THEMES.find(t => t.id === savedThemeId) || AVAILABLE_THEMES[0];
+  
+  AVAILABLE_THEMES.forEach(t => document.body.classList.remove(t.id));
+  document.body.classList.add(validTheme.id);
+
+  // Render options in both landing and dashboard menus
+  renderThemeMenuOptions("landingThemeGrid");
+  renderThemeMenuOptions("dashThemeGrid");
+
+  // Sync initial UI labels & swatches
+  syncThemeUI(validTheme);
+
+  // Wire Landing Theme Picker Trigger
+  const landingWrapper = document.getElementById("landingThemePickerWrapper");
+  const landingBtn = document.getElementById("landingThemeBtn");
+  if (landingBtn && landingWrapper) {
+    landingBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = landingWrapper.classList.contains("open");
+      closeAllThemePickers();
+      if (!isOpen) {
+        landingWrapper.classList.add("open");
+        landingBtn.setAttribute("aria-expanded", "true");
+      }
+    });
+  }
+
+  // Wire Dashboard Theme Picker Trigger
+  const dashWrapper = document.getElementById("dashThemePickerWrapper");
+  const dashBtn = document.getElementById("themeToggle");
+  if (dashBtn && dashWrapper) {
+    dashBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = dashWrapper.classList.contains("open");
+      closeAllThemePickers();
+      if (!isOpen) {
+        dashWrapper.classList.add("open");
+        dashBtn.setAttribute("aria-expanded", "true");
+      }
+    });
+  }
+
+  // Global listener to close dropdowns when clicking outside or pressing Escape
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".theme-picker-wrapper")) {
+      closeAllThemePickers();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closeAllThemePickers();
+    } else if ((e.key === "t" || e.key === "T") && !["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName)) {
+      // Hotkey 'T' to cycle themes
+      cycleNextTheme();
+    }
   });
 }
 
@@ -413,11 +620,13 @@ function switchTab(tabId) {
 // ==========================================================================
 
 function getChartTextColor() {
-  return document.body.classList.contains("theme-light") ? "#475569" : "#94a3b8";
+  if (document.body.classList.contains("theme-light")) return "#475569";
+  const computed = getComputedStyle(document.body).getPropertyValue('--text-muted').trim();
+  return computed || "#94a3b8";
 }
 
 function getChartGridColor() {
-  return document.body.classList.contains("theme-light") ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.06)";
+  return document.body.classList.contains("theme-light") ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.07)";
 }
 
 function initCharts() {
@@ -445,6 +654,8 @@ function initCharts() {
       const centerX = (chartArea.left + chartArea.right) / 2;
       const centerY = (chartArea.top + chartArea.bottom) / 2;
       const isLight = document.body.classList.contains("theme-light");
+      const titleColor = isLight ? "#64748b" : (getComputedStyle(document.body).getPropertyValue('--text-dim').trim() || "#94a3b8");
+      const valColor = isLight ? "#0f172a" : (getComputedStyle(document.body).getPropertyValue('--text-main').trim() || "#ffffff");
 
       ctx.save();
       ctx.textAlign = "center";
@@ -452,12 +663,12 @@ function initCharts() {
 
       // Sub-label (e.g. TOTAL REVENUE)
       ctx.font = "700 10px 'Plus Jakarta Sans', sans-serif";
-      ctx.fillStyle = isLight ? "#64748b" : "#94a3b8";
+      ctx.fillStyle = titleColor;
       ctx.fillText(centerConfig.title || "TOTAL", centerX, centerY - 9);
 
       // Main Total Value (e.g. PKR 1,253.83m)
       ctx.font = "800 14px 'JetBrains Mono', monospace";
-      ctx.fillStyle = isLight ? "#0f172a" : "#ffffff";
+      ctx.fillStyle = valColor;
       const valText = typeof centerConfig.text === "function" ? centerConfig.text() : centerConfig.text;
       ctx.fillText(valText, centerX, centerY + 11);
 
