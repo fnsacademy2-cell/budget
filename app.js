@@ -357,16 +357,6 @@ function updateMasterTable() {
 
 const AVAILABLE_THEMES = [
   {
-    id: "theme-dark",
-    name: "Executive Midnight",
-    shortName: "Midnight",
-    icon: "🌙",
-    accent: "#3b82f6",
-    bg: "#0a0e17",
-    category: "Dark Slate",
-    desc: "Default executive dark slate with glowing cobalt accents"
-  },
-  {
     id: "theme-light",
     name: "Clean Pearl",
     shortName: "Pearl",
@@ -375,6 +365,16 @@ const AVAILABLE_THEMES = [
     bg: "#f8fafc",
     category: "Light Theme",
     desc: "Crisp boardroom white with sharp typography and soft contrast"
+  },
+  {
+    id: "theme-dark",
+    name: "Executive Midnight",
+    shortName: "Midnight",
+    icon: "🌙",
+    accent: "#3b82f6",
+    bg: "#0a0e17",
+    category: "Dark Slate",
+    desc: "Executive dark slate with glowing cobalt accents"
   },
   {
     id: "theme-emerald",
@@ -520,8 +520,8 @@ function closeAllThemePickers() {
 }
 
 function initTheme() {
-  // Load saved theme or default
-  const savedThemeId = localStorage.getItem("malc_theme") || "theme-dark";
+  // Load saved theme or default (Clean Pearl Light)
+  const savedThemeId = localStorage.getItem("malc_theme") || "theme-light";
   const validTheme = AVAILABLE_THEMES.find(t => t.id === savedThemeId) || AVAILABLE_THEMES[0];
   
   AVAILABLE_THEMES.forEach(t => document.body.classList.remove(t.id));
